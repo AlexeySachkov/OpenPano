@@ -42,3 +42,7 @@ if(PYTHONLIBS_FOUND AND BUILD_SHARED_LIBS)
 		PRIVATE ${PYTHON_INCLUDE_DIRS}
 	)
 endif()
+
+# copy artifacts to the directory with results
+install(TARGETS image-stitching RUNTIME DESTINATION bin)
+install(FILES config.cfg DESTINATION bin)

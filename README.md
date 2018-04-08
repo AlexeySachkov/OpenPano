@@ -110,6 +110,16 @@ A full-view pano built from UAV images:
 
 For more examples, see [results](results).
 
+### More input data to test
+
+Some additonal input data to test can be found at
+(Obtained from [this](https://dsp.stackexchange.com/questions/9343/data-for-panorama-stitching-testing) question):
+
+* [Adobe Datasets](https://sourceforge.net/adobe/adobedatasets/panoramas/home/Home/)
+* [Panoramic Image Database](http://www.ti.uni-bielefeld.de/html/research/avardy/index.html)
+* [IIIA Panorama Dataset](http://www.iiia.csic.es/~aramisa/datasets/iiiapanos.html)
+
+
 ## Speed & Memory:
 Tested on Intel Core i7-6700HQ, with `ESTIMATE_CAMERA` mode:
 
