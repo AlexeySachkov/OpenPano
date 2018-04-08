@@ -21,7 +21,10 @@ file(GLOB SOURCES feature/*.cc stitch/*.cc lib/*.cc)
 
 
 add_library(openpano ${SOURCES})	# TODO shared?
-target_link_libraries(openpano ${JPEG_LIBRARY} lodepng Eigen3::Eigen)
+target_link_libraries(openpano lodepng Eigen3::Eigen)
+if (JPEG_FOUND)
+    target_link_libraries(openpano ${JPEG_LIBRARY})
+endif()
 
 add_executable(image-stitching main.cc)
 target_link_libraries(image-stitching openpano)

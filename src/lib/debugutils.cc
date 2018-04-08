@@ -45,7 +45,9 @@ void __print_debug__(const char *file, const char *func, int line, const char *f
   char *fbase = basename(fdup);
 #endif
   c_fprintf(colormap[line].c_str(), stderr, "[%s@%s:%d] ", func, fbase, line);
+#ifndef _MSC_VER
   free(fdup);
+#endif
 
 	va_list ap;
 	va_start(ap, fmt);

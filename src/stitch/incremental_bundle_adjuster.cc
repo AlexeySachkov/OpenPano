@@ -143,7 +143,7 @@ void IncrementalBundleAdjuster::optimize() {
     new_state.params = state.get_params();
     REP(i, new_state.params.size()) {
       // 3~6 of parameters is R
-      if (i < idt * 6 + 3 or i >= idt * 6 + 6)  // do not update R of identity image
+      if (i < idt * 6 + 3 || i >= idt * 6 + 6)  // do not update R of identity image
         new_state.params[i] -= update(i);
     }
     err_stat = calcError(new_state);
