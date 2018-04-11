@@ -31,6 +31,10 @@ extern int MAX_OUTPUT_SIZE;
 extern bool ORDERED_INPUT;
 extern bool LAZY_READ;
 
+extern bool IMAGES_INPUT;
+extern bool VIDEOS_INPUT;
+extern bool VIDEO_FRAMES_INPUT;
+
 extern int SIFT_WORKING_SIZE;
 extern int NUM_OCTAVE;
 extern int NUM_SCALE;

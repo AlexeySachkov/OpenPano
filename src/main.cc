@@ -23,6 +23,7 @@
 #include "common/common.hh"
 #include <ctime>
 #include <cassert>
+#include <string>
 
 #ifdef DISABLE_JPEG
 #define IMGFILE(x) #x ".png"
@@ -212,25 +213,62 @@ void work(int argc, char* argv[]) {
  *      imgs[i-1] = read_img(argv[i]);
  *  }
  */
-	vector<string> imgs;
-	REPL(i, 1, argc) imgs.emplace_back(argv[i]);
-	Mat32f res;
-	if (CYLINDER) {
-		CylinderStitcher p(move(imgs));
-		res = p.build();
-	} else {
-		Stitcher p(move(imgs));
-		res = p.build();
-	}
-
-	if (CROP) {
-		int oldw = res.width(), oldh = res.height();
-		res = crop(res);
-		print_debug("Crop from %dx%d to %dx%d\n", oldw, oldh, res.width(), res.height());
-	}
+	if (VIDEO_FRAMES_INPUT)
 	{
-		GuardedTimer tm("Writing image");
-		write_rgb(IMGFILE(out), res);
+		if (argc < 3) {
+			error_exit("Usage: " + std::string(argv[0]) + " number_of_frames filename1 filename2 [filename3 [filename4 ...]]\n");
+		}
+
+		int num_frames = stoi(argv[1]);
+		for (int i = 0; i < num_frames; ++i) {
+			vector<string> imgs;
+			REPL(j, 2, argc) {
+				string name(argv[j]);
+				name.insert(name.find_last_of('.'), to_string(i));
+				imgs.emplace_back(name);
+			}
+			Mat32f res;
+			if (CYLINDER) {
+				CylinderStitcher p(move(imgs));
+				res = p.build();
+			}
+			else {
+				Stitcher p(move(imgs));
+				res = p.build();
+			}
+
+			if (CROP) {
+				int oldw = res.width(), oldh = res.height();
+				res = crop(res);
+				print_debug("Crop from %dx%d to %dx%d\n", oldw, oldh, res.width(), res.height());
+			}
+			{
+				GuardedTimer tm("Writing image");
+				write_rgb("out" + to_string(i) + ".png", res);
+			}
+		}
+	} else {
+		vector<string> imgs;
+		REPL(i, 1, argc) imgs.emplace_back(argv[i]);
+		Mat32f res;
+		if (CYLINDER) {
+			CylinderStitcher p(move(imgs));
+			res = p.build();
+		}
+		else {
+			Stitcher p(move(imgs));
+			res = p.build();
+		}
+
+		if (CROP) {
+			int oldw = res.width(), oldh = res.height();
+			res = crop(res);
+			print_debug("Crop from %dx%d to %dx%d\n", oldw, oldh, res.width(), res.height());
+		}
+		{
+			GuardedTimer tm("Writing image");
+			write_rgb(IMGFILE(out), res);
+		}
 	}
 }
 
@@ -252,6 +290,19 @@ void init_config() {
 		print_debug("Run with camera estimation mode.\n");
 	else
 		print_debug("Run with naive mode.\n");
+
+	CFG(IMAGES_INPUT);
+	CFG(VIDEO_FRAMES_INPUT);
+	CFG(VIDEOS_INPUT);
+
+	if (int(IMAGES_INPUT) + int(VIDEOS_INPUT) + int(VIDEO_FRAMES_INPUT) >= 3)
+		error_exit("You set more than one input mode...\n");
+	if (VIDEOS_INPUT)
+		print_debug("Use input files as videos.\n");
+	else if (VIDEO_FRAMES_INPUT)
+		print_debug("Use video frames input.\n");
+	else
+		print_debug("Use input files as images\n");
 
 	CFG(ORDERED_INPUT);
 	if (!ORDERED_INPUT && !ESTIMATE_CAMERA)
@@ -331,8 +382,8 @@ void planet(const char* fname) {
 }
 
 int main(int argc, char* argv[]) {
-	if (argc <= 2)
-		error_exit("Need at least two images to stitch.\n");
+	//if (argc <= 2)
+	//	error_exit("Need at least two images to stitch.\n");
 	TotalTimerGlobalGuard _g;
 	srand(time(NULL));
 	init_config();
